@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as pyplot
 
 image = cv2.imread("./test/test_images/straight_lines1.jpg")
-lane_image = np.copy(image)
+
+lane_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # converts from BGR to RGB
 
 
 #Since all lane lines are either yellow or white we are going to crop all yellow and white colors from image/video
@@ -28,9 +29,12 @@ def region_of_interest(img):
     #columns =(x,y)
     #shape is array of four points
     #Triangle Shape
+    #Base is the entire x-axis while the vertex is at 50% width and 60% height
     shape = np.array([[int(0), int(y)], [int(x), int(y)], [int(0.5*x), int(0.6*y)]])
     mask = np.zeros_like(img) #Creates an array of same size as image but all zeros
+    #fillPoly takes an array same size as the image, polygon that you want to draw and a color to make same size polygon image
     cv2.fillPoly(mask,pts=[shape],color=255)
+    #bitwise_anding to get the desired region
     masked_image = cv2.bitwise_and(img,mask)
     return masked_image
 
