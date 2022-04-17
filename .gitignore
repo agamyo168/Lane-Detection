@@ -103,7 +103,14 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-#Jimbo ignorelist
+#Original ignorelist
 *.ipynb
+!team_project.ipynb
 *.mp4
 notes.md
+*.jpg
+*.png
+*.zip
+
+
+
