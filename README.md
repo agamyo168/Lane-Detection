@@ -36,3 +36,10 @@ pip install jupyter numpy matplot opencv-python moviepy
 ```
 python .\lane_detection.py './src/challenge_video.mp4' './dst/output.mp4' -d
 ```
+
+## To run the notebook:
+When reaching debugging mode, the video will start automatically:
+- Press "L" to get next frame.
+- Press "Q" to close video.
+    
+    
