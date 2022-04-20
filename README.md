@@ -7,8 +7,7 @@
 - Ziad Mostafa Abd El-Aziz Mostafa زياد مصطفى عبد العزيز مصطفى, code: 1700572
 
 ## Prerequistes:
-
-- To Install Needed Libraries:
+### install needed libraries
 - pip install jupyter
 - pip install numpy
 - pip install matplot
@@ -19,8 +18,6 @@ pip install jupyter numpy matplot opencv-python moviepy
 ```
 
 ## To run the script:
-
-- To run batch script:
 - open power shell or cmd
 - write this command to get output video:
 
@@ -34,7 +31,7 @@ pip install jupyter numpy matplot opencv-python moviepy
 .\script './src/challenge_video.mp4' './dst/output.mp4' -d
 ```
 
-## To run python file directly
+- to run python file directly
 
 ```
 python .\lane_detection.py './src/challenge_video.mp4' './dst/output.mp4' -d
