@@ -14,6 +14,9 @@
 - pip install matplot
 - pip install opencv-python
 - pip install moviepy
+```
+pip install jupyter numpy matplot opencv-python moviepy
+```
 
 ## To run the script:
 
@@ -22,17 +25,17 @@
 - write this command to get output video:
 
 ```
-.\script '\src\challenge_video.mp4' '\dst\output.mp4'
+.\script './src/challenge_video.mp4' './dst/output.mp4'
 ```
 
 - to enable debugging mode add -d or --debug to the end of the command
 
 ```
-.\script '\src\challenge_video.mp4' '\dst\output.mp4' -d
+.\script './src/challenge_video.mp4' './dst/output.mp4' -d
 ```
 
 ## To run python file directly
 
 ```
-python .\lane_detection.py '\src\challenge_video.mp4' '\dst\output.mp4' -d (or) --debug
+python .\lane_detection.py './src/challenge_video.mp4' './dst/output.mp4' -d
 ```
