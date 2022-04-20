@@ -94,7 +94,7 @@ right_a, right_b, right_c = [],[],[]
 
 def sliding_window(img, 
                    nwindows=9, #Number of windows 
-                   margin=150, #half window width 100?
+                   margin=100, #half window width 100?
                    minpix = 1 #minimum number of pixels to recenter the window 50? 
                   ):
     global left_a, left_b, left_c,right_a, right_b, right_c  # hn3raf ba3den
