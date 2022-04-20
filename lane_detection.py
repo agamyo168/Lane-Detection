@@ -27,8 +27,8 @@ def gaussian_blur(img,kernel_size=5):
 
 def draw_roi(img,isClosed=True,color=(255,0,0),thickness=5):
     x,y = (img.shape[1],img.shape[0])
-    pts = np.array([[0.1,0.95*y], [0.43*x,int(0.65*y)],
-                [0.58*x,0.65*y], [x,0.95*y]],
+    pts = np.array([[0.15*x,0.95*y], [0.43*x,int(0.65*y)],
+                [0.58*x,0.65*y], [1*x,0.95*y]],
                np.int32)
     pts = pts.reshape((-1, 1, 2))
     img = cv2.polylines(img, [pts], 
@@ -40,7 +40,7 @@ def perspective_transform(img,dst_size=(1280,720),inv=0):
     img_size=np.float32([(img.shape[1],img.shape[0])])
     #Region of Interest
     #Order is top left, top right, bottom left, bottom right
-    src=np.float32([(0.43,0.65),(0.58,0.65),(0.1,0.95),(1,0.95)])
+    src=np.float32([(0.43,0.65),(0.58,0.65),(0.15,0.95),(0.95,0.95)])
     dst=np.float32([(0,0), (1, 0), (0,1), (1,1)])
     srcPoints = src*img_size
     dstPoints = dst*np.float32(dst_size)
@@ -83,6 +83,9 @@ def lane_filter(img):
 
     combined_binary = np.zeros_like(tophat)
     combined_binary[(s_binary == 1) | (tophat == 1)] = 1
+    # to eliminate noise around lane 
+    #     kernel = np.ones((10,1),np.uint8)
+#     s_binary = cv2.erode(s_binary,kernel,iterations = 2)
     return combined_binary
 
 #Globally defined to store the parameters of past images
@@ -204,6 +207,7 @@ def sliding_window(img,
     right_fitx = right_fit_[0]*ploty**2 + right_fit_[1]*ploty + right_fit_[2]
     
     return out_img, (left_fitx, right_fitx), (left_fit_, right_fit_), ploty
+
 #Overlay on frames
 def draw_lanes(img, left_fit, right_fit,ploty):
 #     ploty = np.linspace(0, img.shape[0]-1, img.shape[0])
@@ -220,6 +224,36 @@ def draw_lanes(img, left_fit, right_fit,ploty):
     inv_perspective = perspective_transform(color_img,inv=1)
     inv_perspective = cv2.addWeighted(img, 1, inv_perspective, 0.7, 0)
     return inv_perspective,color_img
+
+def get_curve(img, leftx, rightx):
+    # get image y-axis
+    # linspace takes start, stop, number of steps
+    # so here we will start from 0, reach to image last y point
+    # and takes steps equal to all image y pixels
+    ploty = np.linspace(0, img.shape[0]-1, img.shape[0])
+    y_eval = np.max(ploty)
+    
+    # these values are related to camera
+    ym_per_pix = 30.5/720 # meters per pixel in y dimension
+    xm_per_pix = 3.7/730 # meters per pixel in x dimension
+
+    # Fit new polynomials to x,y in world space
+    left_fit_cr = np.polyfit(ploty*ym_per_pix, leftx*xm_per_pix, 2)
+    right_fit_cr = np.polyfit(ploty*ym_per_pix, rightx*xm_per_pix, 2)
+    
+    # Calculate the new radii of curvature
+    left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+    right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
+
+    # center of x-axis
+    car_pos = img.shape[1]/2
+    
+    l_fit_x_int = left_fit_cr[0]*img.shape[0]**2 + left_fit_cr[1]*img.shape[0] + left_fit_cr[2]
+    r_fit_x_int = right_fit_cr[0]*img.shape[0]**2 + right_fit_cr[1]*img.shape[0] + right_fit_cr[2]
+    lane_center_position = (r_fit_x_int + l_fit_x_int) /2
+    center = (car_pos - lane_center_position) * xm_per_pix / 10
+
+    return (left_curverad, right_curverad, center)
 
 def debugging_video_frame_by_frame(path):
     ##Live Video Capture Option for debugging mode
@@ -248,16 +282,41 @@ def debugging_video_frame_by_frame(path):
         
     cap.release()
     cv2.destroyAllWindows()
+
 def final_output(img):
+    # define font style
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    fontColor = (52, 119, 235) #RGB
+    fontSize=2
+    textPosition = (50,50)
+    
     img_roi = np.copy(img)
     img_roi = draw_roi(img_roi) #Region of interest 1
+    
     img_pip = lane_filter(img) #Returns binary image s_condition + l_channel tophat
-    img_pt = perspective_transform(img_pip, dst_size=(1280,720),inv=0) #birdview 
-    img_sw, curves, _, ploty = sliding_window(img_pt) #Sliding window image + curve points and parameters 
-    img_final,birdview_curve = draw_lanes(img, curves[0], curves[1],ploty) #draws the overlay 
+    img_pip2 = np.dstack((img_pip,img_pip,img_pip))*255
+    cv2.putText(img_pip2, 'Filtered Image', textPosition, font, fontSize, fontColor, 2)
+    
+   # Birdview
+    img_pt = perspective_transform(img_pip, dst_size=(1280,720),inv=0) #birdview
+    img_pt[int(img_pt.shape[0]//2):img_pt.shape[0],400:900] = 0
+#     img_pt[int(img_pt.shape[0]/2):img_pt.shape[0],250:1000] = 0
+    img_pt2 = np.dstack((img_pt,img_pt,img_pt))*255
+    cv2.putText(img_pt2, 'Bird eye view', textPosition, font, fontSize, fontColor, 2)
 
+    img_sw, curves, _, ploty = sliding_window(img_pt) #Sliding window image + curve points and parameters 
+    cv2.putText(img_sw, 'Sliding window result', textPosition, font, fontSize, fontColor, 2)
+
+
+    # get curves
+    curverad =get_curve(img, curves[0], curves[1])
+    lane_curve = np.mean([curverad[0], curverad[1]])
+
+    img_final,birdview_curve = draw_lanes(img, curves[0], curves[1],ploty) #draws the overlay
+    cv2.putText(birdview_curve, 'Polynomial fit', textPosition, font, fontSize, fontColor, 2)
+    #Debugging mode?
     if(option =='-d' or option == '--debug'):
-        #Debugging mode?
+
         # resize images
         #Bottom
         img_bot = np.hstack((img_sw,birdview_curve)) #Same width but half height
@@ -265,13 +324,14 @@ def final_output(img):
         img = np.vstack((img_final,img_bot))
         
         #Side
-        img_stack = np.vstack((img_pip,img_pt))
-        img_stack = np.dstack((img_stack,img_stack,img_stack))*255
+        img_stack = np.vstack((img_pip2,img_pt2))
+        # img_stack = np.dstack((img_stack,img_stack,img_stack))*255
         img_side = np.vstack((img_roi,img_stack))
         img_side = cv2.resize(img_side, (int(img.shape[1]/2),img.shape[0]))
         img_final = np.hstack((img,img_side))
 
-    
+    cv2.putText(img_final, 'Lane Curvature: {:.0f} m'.format(lane_curve), (50, 50), font, 1, fontColor, 2)
+    cv2.putText(img_final, 'Vehicle offset: {:.4f} m'.format(curverad[2]), (50, 80), font, 1, fontColor, 2)
     return img_final
 
 def video_output():
