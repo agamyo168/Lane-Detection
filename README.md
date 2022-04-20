@@ -1,4 +1,4 @@
-[Repo link]('https://github.com/agamyo168/Lane-Detection/')
+https://github.com/agamyo168/Lane-Detection/
 
 ## Contributers:
 
