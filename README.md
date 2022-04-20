@@ -2,9 +2,9 @@
 
 ## Contributers:
 
-- Fady Ahmed Mostafa Ali فادي احمد مصطفي على, code: 1700957
-- Omar Gamal Hamed Agami عمر جمال حامد عجمي, code: 1700860
-- Ziad Mostafa Abd El-Aziz Mostafa زياد مصطفى عبد العزيز مصطفى, code: 1700572
+- Fady Ahmed Mostafa Ali فادي احمد مصطفي على, code: 1700957, Section: 3
+- Omar Gamal Hamed Agami عمر جمال حامد عجمي, code: 1700860, Section: 3,
+- Ziad Mostafa Abd El-Aziz Mostafa زياد مصطفى عبد العزيز مصطفى, code: 1700572, Section: 2
 
 ## Prerequistes:
 ### install needed libraries
