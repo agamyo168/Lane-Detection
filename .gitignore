@@ -108,6 +108,7 @@ dmypy.json
 !team_project.ipynb
 !vehicle_detection.ipynb
 !vehicle_detection_colab.ipynb
+!yolo_vehicle_detection.ipynb
 *.mp4
 *.mp3
 *.DS_Store
@@ -116,6 +117,10 @@ notes.md
 *.png
 *.zip
 *.p
+# YOLO 
+*.cfg
+*.names
+*.weights
 
 
 
