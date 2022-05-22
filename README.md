@@ -6,15 +6,17 @@
 - Omar Gamal Hamed Agami عمر جمال حامد عجمي, code: 1700860, Section: 3,
 - Ziad Mostafa Abd El-Aziz Mostafa زياد مصطفى عبد العزيز مصطفى, code: 1700572, Section: 2
 
-## Prerequistes:
+## Prerequisites:
 ### install needed libraries
 - pip install jupyter
 - pip install numpy
 - pip install matplot
 - pip install opencv-python
 - pip install moviepy
+- pip install scikit-image
+- pip install scikit-learn
 ```
-pip install jupyter numpy matplot opencv-python moviepy
+pip install jupyter numpy matplot opencv-python moviepy scikit-image scikit-learn
 ```
 
 ## To run the script:
