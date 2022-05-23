@@ -116,7 +116,6 @@ notes.md
 *.jpg
 *.png
 *.zip
-*.p
 # YOLO 
 *.cfg
 *.names
