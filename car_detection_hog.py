@@ -326,7 +326,7 @@ def video_output():
     global input_path,output_path
     myclip = VideoFileClip(input_path)
     clip = myclip.fl_image(process_image)
-    clip.write_videofile(output_path, fps =25,audio=False)
+    clip.write_videofile(output_path,audio=False)
 
 video_output()
 
